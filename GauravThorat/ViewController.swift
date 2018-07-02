@@ -37,7 +37,8 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
     var csvString = "region_code,weather_param,year,key,value"
     var completionCounter = 0
     var dataSet = ["UK" : [DetailModel](), "England" : [DetailModel](), "Wales" : [DetailModel](), "Scotland" : [DetailModel]()] as [String : [DetailModel]]
-    
+    var reachability: Reachability?
+
     // MARK: - Viewcontroller Lifecycle methods
     
     override func viewDidLoad() {
@@ -63,10 +64,22 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
                 print("Unable to delete...")
             }
         } else {
-            DispatchQueue.main.async {
-                MBProgressHUD.showAdded(to: self.view, message: "We are processing the data...", animated: true)
+            do {
+                reachability = try Reachability.forInternetConnection()
+            } catch {
+                print("Unable to create Reachability")
             }
-            self.downloadData()
+            if reachability!.isReachable() {
+                DispatchQueue.main.async {
+                    MBProgressHUD.showAdded(to: self.view, message: "We are processing the data...", animated: true)
+                }
+                self.downloadData()
+            } else {
+                let errorAlert = UIAlertController(title: "No Internet Connection", message: nil, preferredStyle: .alert)
+                let dismiss = UIAlertAction(title: "Ok", style: .default, handler: nil)
+                errorAlert.addAction(dismiss)
+                self.present(errorAlert, animated: true, completion: nil)
+            }
         }
     }
     }

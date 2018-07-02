@@ -10,4 +10,5 @@
 #define Bridge_header_h
 
 #import "MBProgressHUD.h"
+#import "Reachability.h"
 #endif /* Bridge_header_h */
